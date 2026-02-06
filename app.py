@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+import http
+import os
+import signal
 import asyncio
 import json
 import secrets
@@ -12,6 +14,11 @@ from connect4 import PLAYER1, PLAYER2, Connect4
 JOIN = {}
 
 WATCH = {}
+
+
+def health_check(connection, request):
+    if request.path == "/healthz":
+        return connection.respond(http.HTTPStatus.OK, "OK\n")
 
 
 async def error(websocket, message):
@@ -182,9 +189,11 @@ async def handler(websocket):
 
 
 async def main():
-    async with serve(handler, "", 8001) as server:
-        await server.serve_forever()
-
+    port = int(os.environ.get("PORT", "8001"))
+    async with serve(handler, "", port, process_request=health_check) as server:
+        loop = asyncio.get_running_loop()
+        loop.add_signal_handler(signal.SIGTERM, server.close)
+        await server.wait_closed()
 
 if __name__ == "__main__":
     asyncio.run(main())
