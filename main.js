@@ -1,7 +1,7 @@
 import { createBoard, playMove } from "./connect4.js";
 
 function getWebSocketServer() {
-  if (window.location.host === "dayanik.github.io/websockets-tutorial") {
+  if (window.location.host === "dayanik.github.io") {
     return "wss://unusual-aphid-helllo-world-7494af2b.koyeb.app/";
   } else if (window.location.host === "localhost:8000") {
     return "ws://localhost:8001/";
